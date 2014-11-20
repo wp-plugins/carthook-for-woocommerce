@@ -9,6 +9,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 CartHook helps you increase revenue by automatically recovering abandoned carts.
 
+
 == Description ==
 
 You probably know that well over 50% of shopping carts are abandoned. It happens to you, to Amazon, to Zappos, and everybody else selling online.
@@ -21,8 +22,6 @@ Painful, isn't it? All that work (and money) you put into getting these people t
 
 
 == Installation ==
-
-= Minimum Requirements =
 
 = Automatic installation =
 Automatic installation is the easiest option as WordPress handles the file transfers itself and you don't need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
