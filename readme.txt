@@ -7,6 +7,7 @@ Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
+CartHook helps you increase revenue by automatically recovering abandoned carts.
 
 == Description ==
 
