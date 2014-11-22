@@ -1,5 +1,5 @@
 === CartHook for WooCommerce ===
-Contributors: stephen.zuniga001
+Contributors: CartHook
 Tags: woocommerce, carthook, payment gateway, cart, cart abandonment, ecommerce, e-commerce, commerce, checkout
 Requires at least: 3.8.0
 Tested up to: 4.0.0
@@ -20,13 +20,14 @@ Painful, isn't it? All that work (and money) you put into getting these people t
 
 [CartHook](http://carthook.com/) is a new way to recover those abandoned carts.
 
+For support or additional information, please contact jordan AT carthook.com
 
 == Installation ==
 
 = Automatic installation =
 Automatic installation is the easiest option as WordPress handles the file transfers itself and you don't need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
 
-In the search field type “Stripe for WooCommerce” and click Search Plugins. Once you've found our plugin you can view details about it such as the the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
+In the search field type "CartHook for WooCommerce" and click Search Plugins. Once you've found our plugin you can view details about it such as the the release date, rating and description. Most importantly of course, you can install it by simply clicking "Install Now".
 
 = Manual installation =
 
