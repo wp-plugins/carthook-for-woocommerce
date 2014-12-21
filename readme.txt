@@ -2,7 +2,7 @@
 Contributors: CartHook
 Tags: woocommerce, carthook, payment gateway, cart, cart abandonment, ecommerce, e-commerce, commerce, checkout
 Requires at least: 3.8.0
-Tested up to: 4.0.0
+Tested up to: 4.1.0
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

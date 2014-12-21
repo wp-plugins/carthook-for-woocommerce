@@ -27,8 +27,8 @@ class CartHook_WC {
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_cart_id' ) );
 		add_action( 'valid-paypal-standard-ipn-request', array( $this, 'paypal_payment_complete' ) );
-		add_action( 'woocommerce_order_status_processing', array( $this, 'payment_complete' ) );
-		add_action( 'woocommerce_order_status_completed', array( $this, 'payment_complete' ) );
+		// add_action( 'woocommerce_order_status_processing', array( $this, 'payment_complete' ) );
+		// add_action( 'woocommerce_order_status_completed', array( $this, 'payment_complete' ) );
 	}
 
 	/**
@@ -91,7 +91,7 @@ class CartHook_WC {
 				<li>Click on the Save Changes button on this page</li>
 				<li>Go back to the Setup page of your CartHook account and make sure to click the "I've installed the tracking code" button in Step 3.</li>
 			</ol>
-			<p>Have any questions?  Contact us at 1-800-816-9316 or email <a href="mailto:jordan@carthook.com">jordan@carthook.com</a></p>
+			<p>Have any questions? Contact us at 1-800-816-9316 or email <a href="mailto:jordan@carthook.com">jordan@carthook.com</a></p>
 		</div>
 		<?php
 	}
@@ -133,7 +133,7 @@ class CartHook_WC {
 			var crthk_cart = <?php echo $this->format_carthook_cart(); ?>;
 
 			(function() {
-				var ch = document.createElement('script'); ch.type='text/javascript'; ch.async=true;
+				var ch = document.createElement('script'); ch.type = 'text/javascript'; ch.async = true;
 				ch.src = 'https://carthook.com/api/js/';
 				var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(ch, x);
 			})();
@@ -150,11 +150,11 @@ class CartHook_WC {
 	public function add_thankyou_script() {
 		?>
 		<script type='text/javascript'>
-			var crthk_setup='<?php echo get_option( 'carthook_merchant_id' ); ?>'; 
-			var crthk_complete=true;
+			var crthk_setup = '<?php echo get_option( 'carthook_merchant_id' ); ?>'; 
+			var crthk_complete = true;
 
 			(function() {
-				var ch = document.createElement('script'); ch.type='text/javascript'; ch.async=true;
+				var ch = document.createElement('script'); ch.type = 'text/javascript'; ch.async = true;
 				ch.src = 'https://carthook.com/api/js/';
 				var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(ch, x);
 			})();
