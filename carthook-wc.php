@@ -3,7 +3,7 @@
  * Plugin Name: CartHook for WooCommerce
  * Plugin URI: https://carthook.com/
  * Description: CartHook helps you increase revenue by automatically recovering abandoned carts.
- * Version: 1.0
+ * Version: 1.0.1
  * Author: CartHook
  * Author URI: https://carthook.com/
  *
@@ -13,23 +13,37 @@
 
 class CartHook_WC {
 
+
 	/**
 	 * Constructor for the plugin.
 	 *
 	 * @access        public
-	 * @return        void
 	 */
 	public function __construct() {
 
+		if ( !class_exists( 'WooCommerce' ) ) {
+			add_action( 'admin_init', array( $this, 'carthook_nag_ignore' ) );
+			add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
+			return;
+		}
+
+		// Add the plugin page Settings and Docs links
+		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'carthook_plugin_links' ));
+
 		// Hooks
+		add_action( 'plugin', '');
+		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_menu', array( $this, 'admin_page' ) );
 		add_action( 'wp_footer', array( $this, 'add_footer_scripts' ) );
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_cart_id' ) );
-		add_action( 'valid-paypal-standard-ipn-request', array( $this, 'paypal_payment_complete' ) );
-		// add_action( 'woocommerce_order_status_processing', array( $this, 'payment_complete' ) );
-		// add_action( 'woocommerce_order_status_completed', array( $this, 'payment_complete' ) );
+
+		// Handle order state changes for gateways that don't use Thank You page
+		add_action( 'woocommerce_order_status_pending_to_processing', array( $this, 'payment_complete' ) );
+		add_action( 'woocommerce_order_status_on-hold_to_processing', array( $this, 'payment_complete' ) );
+		add_action( 'woocommerce_order_status_processing_to_completed', array( $this, 'payment_complete' ) );
+
 	}
+
 
 	/**
 	 * Set up admin notices
@@ -49,6 +63,7 @@ class CartHook_WC {
 		endif;
 	}
 
+
 	/**
 	 * Initialize the CartHook menu
 	 *
@@ -56,9 +71,10 @@ class CartHook_WC {
 	 * @return        void
 	 */
 	public function admin_page() {
-		add_menu_page( 'CartHook', 'CartHook', 'manage_options', 'carthook', array( &$this, 'admin_options' ), plugins_url( 'carthook-wc/images/carthook.png' ), 58 );
-		add_action( 'admin_init', array( &$this, 'register_settings' ) );
+		add_menu_page( 'CartHook', 'CartHook', 'manage_options', 'carthook', array( &$this, 'admin_options' ), plugins_url( 'images/carthook.png', __FILE__ ), 58 );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
 	}
+
 
 	/**
 	 * Add options to the CartHook menu
@@ -96,6 +112,7 @@ class CartHook_WC {
 		<?php
 	}
 
+
 	/**
 	 * Register settings for CartHook
 	 *
@@ -105,6 +122,7 @@ class CartHook_WC {
 	public function register_settings() {
 		register_setting( 'carthook-settings-group', 'carthook_merchant_id' );
 	}
+
 
 	/**
 	 * Add scripts to the footer of th checkout or thank you page
@@ -119,6 +137,7 @@ class CartHook_WC {
 			$this->add_thankyou_script();
 		}
 	}
+
 
 	/**
 	 * Checkout page script
@@ -141,6 +160,7 @@ class CartHook_WC {
 		<?php
 	}
 
+
 	/**
 	 * Thank you page script
 	 *
@@ -162,8 +182,9 @@ class CartHook_WC {
 		<?php
 	}
 
+
 	/**
-	 * When the order is submitted, retreive the cart id and save it to the order
+	 * When the order is submitted, retrieve the cart id and save it to the order
 	 *
 	 * @access        public
 	 * @param         int $order_id
@@ -176,24 +197,6 @@ class CartHook_WC {
 		}
 	}
 
-	/**
-	 * PayPal sends a request back to WooCommerce when a payment is completed,
-	 * obtain the post id and trigger the payment complete status (might not be necessary)
-	 *
-	 * @access        public
-	 * @param         array $posted
-	 * @return        void
-	 */
-	public function paypal_payment_complete( $posted ) {
-		$posted = stripslashes_deep( $posted );
-
-		// Custom holds post ID
-		if ( ! empty( $posted['invoice'] ) && ! empty( $posted['custom'] ) ) {
-			$order = WC_Gateway_Paypal::get_paypal_order( $posted['custom'], $posted['invoice'] );
-
-			$this->payment_complete( $order->ID );
-		}
-	}
 
 	/**
 	 * When the order is triggered as complete or processing,
@@ -204,6 +207,7 @@ class CartHook_WC {
 	 * @return        void
 	 */
 	public function payment_complete( $order_id ) {
+		error_log( "CARTHOOK: payment_complete. order: " . $order_id ); // TODO remove
 		$merchant_id = get_option( 'carthook_merchant_id' );
 		$cart_id = get_post_meta( $order_id, '_crthk_cid', true );
 
@@ -214,6 +218,7 @@ class CartHook_WC {
 			'user-agent'    => 'CartHook-WC',
 		) );
 	}
+
 
 	/**
 	 * Format a JSON object that CartHook can work with
@@ -246,5 +251,59 @@ class CartHook_WC {
 
 		return json_encode( $carthook_cart );
 	}
+
+
+	/**
+	 * Plugin page links
+	 *
+	 * @param array $links
+	 * @return array
+	 */
+	function carthook_plugin_links( $links ) {
+
+		$links['settings']      = '<a href="' . admin_url( 'admin.php?page=carthook&settings-updated=true' ) . '">' . __( 'Settings', 'carthook_wc' ) . '</a>';
+		$links['feedback']      = '<a href="mailto:jordan@carthook.com">' . __( 'Feedback', 'carthook_wc' ) . '</a>';
+		$links['documentation'] = '<a href="https://carthook.com/dashboard/help">' . __( 'Documentation', 'carthook_wc' ) . '</a>';
+
+		return $links;
+
+	}
+
+
+	/**
+	 * WooCommerce missing notice.
+	 *
+	 * @return string
+	 */
+	public function woocommerce_missing_notice() {
+		global $current_user ;
+		$user_id = $current_user->ID;
+		if ( ! get_user_meta( $user_id, 'carthook_wc_missing_nag' ) ) {
+			echo '<div class="error"><p>' . sprintf( __( 'CartHook for WooCommerce requires %s to be installed and active. | <a href="%s">Hide Notice</a>', 'carthook_wc' ), '<a href="http://woocommerce.com/" target="_blank">' . __( 'WooCommerce', 'carthook_wc' ) . '</a>', '?carthook_wc_missing_nag=0' ) . '</p></div>';
+		}
+	}
+
+
+	/**
+	 *  Remove the nag if user chooses
+	 */
+	function carthook_nag_ignore() {
+
+		global $current_user;
+		$user_id = $current_user->ID;
+		if ( isset( $_GET['carthook_wc_missing_nag'] ) && '0' == $_GET['carthook_wc_missing_nag'] ) {
+			add_user_meta( $user_id, 'carthook_wc_missing_nag', 'true', true );
+		}
+
+	}
+
+
 }
-new CartHook_WC();
+
+/**
+ * Load CartHook
+ */
+function carthook_plugins_loaded() {
+	new CartHook_WC();
+}
+add_action( 'plugins_loaded', 'carthook_plugins_loaded' );
