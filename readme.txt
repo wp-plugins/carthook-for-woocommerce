@@ -3,7 +3,7 @@ Contributors: CartHook
 Tags: woocommerce, carthook, payment gateway, cart, cart abandonment, ecommerce, e-commerce, commerce, checkout
 Requires at least: 3.8.0
 Tested up to: 4.1.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -38,6 +38,9 @@ The manual installation method involves downloading our eCommerce plugin and upl
 The plugin should automatically update with new features, but you could always download the new version of the plugin and manually update the same way you would manually install.
 
 == Changelog ==
+
+= 1.0.2 =
+* Added completed cart for 'woocommerce_checkout_order_processed' action.
 
 = 1.0.1 =
 * Updates for PayPal Standard handling

@@ -3,7 +3,7 @@
  * Plugin Name: CartHook for WooCommerce
  * Plugin URI: https://carthook.com/
  * Description: CartHook helps you increase revenue by automatically recovering abandoned carts.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: CartHook
  * Author URI: https://carthook.com/
  *
@@ -35,7 +35,8 @@ class CartHook_WC {
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_menu', array( $this, 'admin_page' ) );
 		add_action( 'wp_footer', array( $this, 'add_footer_scripts' ) );
-		add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_cart_id' ) );
+		add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_cart_id' ), 30 );
+		add_action( 'woocommerce_checkout_order_processed', array( $this, 'payment_complete' ), 60 );
 
 		// Handle order state changes for gateways that don't use Thank You page
 		add_action( 'woocommerce_order_status_pending_to_processing', array( $this, 'payment_complete' ) );
@@ -207,7 +208,7 @@ class CartHook_WC {
 	 * @return        void
 	 */
 	public function payment_complete( $order_id ) {
-		error_log( "CARTHOOK: payment_complete. order: " . $order_id ); // TODO remove
+
 		$merchant_id = get_option( 'carthook_merchant_id' );
 		$cart_id = get_post_meta( $order_id, '_crthk_cid', true );
 
